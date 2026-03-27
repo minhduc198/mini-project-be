@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1773756676804,
+    "first_name": "John",
+    "last_name": "",
+    "email": "test@gmail.com",
+    "address": "Ba Dinh",
+    "zipcode": "",
+    "city": null,
+    "stateAbbr": null,
+    "birthday": null,
+    "first_seen": "2026-03-17T14:11:16.805Z",
+    "last_seen": "2026-03-17T14:11:16.805Z",
+    "has_ordered": false,
+    "latest_purchase": null,
+    "has_newsletter": false,
+    "groups": [],
+    "nb_orders": 0,
+    "total_spent": 0
+  }
+]

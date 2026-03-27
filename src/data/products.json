@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1773756916939,
+    "inventory_id": 0,
+    "reference": "SP001",
+    "width": 0,
+    "height": 0,
+    "price": 1020,
+    "thumbnail": "",
+    "image": "",
+    "description": "",
+    "stock": 0,
+    "sales": 0
+  },
+  {
+    "id": 1773758242259,
+    "inventory_id": 1773757652953,
+    "reference": "SP001",
+    "width": 0,
+    "height": 0,
+    "price": 100,
+    "thumbnail": "",
+    "image": "",
+    "description": "",
+    "stock": 0,
+    "sales": 0
+  }
+]
