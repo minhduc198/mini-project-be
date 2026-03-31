@@ -19,6 +19,9 @@ app.use(
   }),
 );
 
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "API is healthy" });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
