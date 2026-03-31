@@ -25,8 +25,31 @@ export const getOrders = async (body: any) => {
     .is("deleted_at", null);
 
   if (filter) {
-    if (filter.status) query = query.eq("status", filter.status);
-    if (filter.customer_id) query = query.eq("customer_id", filter.customer_id);
+    if (filter.status) {
+      query = query.eq("status", filter.status);
+    }
+
+    if (filter.customer_id) {
+      query = query.eq("customer_id", filter.customer_id);
+    }
+
+    if (filter.reference) {
+      query = query.ilike("reference", `%${filter.reference}%`);
+    }
+
+    if (filter.date_from) {
+      query = query.gte("date", filter.date_from);
+    }
+
+    if (filter.date_to) {
+      query = query.lte("date", filter.date_to);
+    }
+
+    if (filter.date) {
+      query = query
+        .gte("date", `${filter.date}T00:00:00`)
+        .lte("date", `${filter.date}T23:59:59`);
+    }
   }
 
   if (sort?.field) {
