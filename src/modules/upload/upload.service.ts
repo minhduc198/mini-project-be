@@ -1,14 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 import { UploadImageResponse } from "./upload.type";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
 const BUCKET = "IMAGE";
-
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
@@ -17,15 +11,31 @@ const ALLOWED_MIME_TYPES = [
 ];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+let _client: SupabaseClient | null = null;
+
+function getClient(): SupabaseClient {
+  if (_client) return _client;
+
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    throw new Error(
+      `SUPABASE_URL=${url ? "OK" : "MISSING"}, SUPABASE_SERVICE_ROLE_KEY=${key ? "OK" : "MISSING"}`,
+    );
+  }
+
+  _client = createClient(url, key);
+  return _client;
+}
+
 export class UploadService {
   private static validateFile(file: Express.Multer.File) {
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new Error(
-        `This file is not suitable. Only accept: ${ALLOWED_MIME_TYPES.join(", ")}`,
-      );
+      throw new Error(`Just only accept ${ALLOWED_MIME_TYPES.join(", ")}`);
     }
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error("File is too large. Maximum size is 5MB");
+      throw new Error("Maximum 5MB");
     }
   }
 
@@ -34,6 +44,7 @@ export class UploadService {
   ): Promise<UploadImageResponse> {
     this.validateFile(file);
 
+    const supabase = getClient();
     const ext = file.originalname.split(".").pop();
     const fileName = `${uuidv4()}.${ext}`;
 
@@ -57,8 +68,9 @@ export class UploadService {
   }
 
   static async deleteImage(path: string): Promise<void> {
+    const supabase = getClient();
     const { error } = await supabase.storage.from(BUCKET).remove([path]);
-    if (error) throw new Error(`Delete image failed: ${error.message}`);
+    if (error) throw new Error(`Failed to delete image: ${error.message}`);
   }
 
   static async updateImage(
@@ -66,13 +78,11 @@ export class UploadService {
     file: Express.Multer.File,
   ): Promise<UploadImageResponse> {
     const newImage = await this.uploadImage(file);
-
     try {
       await this.deleteImage(oldPath);
     } catch {
       console.warn(`Failed to delete old image at path: ${oldPath}`);
     }
-
     return newImage;
   }
 }
