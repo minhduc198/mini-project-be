@@ -2,15 +2,17 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 import { UploadImageResponse } from "./upload.type";
 
-const BUCKET = "IMAGE";
+const BUCKET = "image";
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
 ];
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Lazy initialization — chỉ tạo client khi function được gọi,
+// tránh lỗi "supabaseKey is required" lúc module load
 let _client: SupabaseClient | null = null;
 
 function getClient(): SupabaseClient {
@@ -32,10 +34,12 @@ function getClient(): SupabaseClient {
 export class UploadService {
   private static validateFile(file: Express.Multer.File) {
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new Error(`Just only accept ${ALLOWED_MIME_TYPES.join(", ")}`);
+      throw new Error(
+        `File type is not allowed. Only ${ALLOWED_MIME_TYPES.join(", ")} are accepted.`,
+      );
     }
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error("Maximum 5MB");
+      throw new Error("File is too large, Maximum size is 5MB");
     }
   }
 
@@ -81,7 +85,7 @@ export class UploadService {
     try {
       await this.deleteImage(oldPath);
     } catch {
-      console.warn(`Failed to delete old image at path: ${oldPath}`);
+      console.warn(`Cannot delete old image at path ${oldPath}`);
     }
     return newImage;
   }
