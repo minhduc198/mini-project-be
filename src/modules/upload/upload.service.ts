@@ -4,7 +4,7 @@ import { UploadImageResponse } from "./upload.type";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 const BUCKET = "IMAGE";
@@ -25,7 +25,7 @@ export class UploadService {
       );
     }
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error("Max file size is 5MB");
+      throw new Error("File is too large. Maximum size is 5MB");
     }
   }
 
@@ -70,7 +70,7 @@ export class UploadService {
     try {
       await this.deleteImage(oldPath);
     } catch {
-      console.warn(`Delete old image failed at path: ${oldPath}`);
+      console.warn(`Failed to delete old image at path: ${oldPath}`);
     }
 
     return newImage;
