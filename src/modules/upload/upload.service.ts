@@ -9,10 +9,8 @@ const ALLOWED_MIME_TYPES = [
   "image/webp",
   "image/gif",
 ];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-// Lazy initialization — chỉ tạo client khi function được gọi,
-// tránh lỗi "supabaseKey is required" lúc module load
 let _client: SupabaseClient | null = null;
 
 function getClient(): SupabaseClient {
